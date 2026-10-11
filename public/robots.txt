@@ -1,0 +1,3 @@
+# Demo deployment with fictional data. Not for indexing.
+User-agent: *
+Disallow: /
