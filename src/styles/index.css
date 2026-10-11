@@ -1,0 +1,328 @@
+@import 'tailwindcss';
+@import '@fontsource-variable/anek-latin/wdth.css';
+
+/*
+ * Design tokens — source: docs/DESIGN-DIRECTION.md §4–§7.
+ * Tailwind's default palette is removed so only these tokens can be used.
+ */
+@theme {
+  --color-*: initial;
+  --color-transparent: transparent;
+  --color-current: currentColor;
+  --color-white: #ffffff;
+
+  /*
+   * Routes palette (DESIGN-DIRECTION.md §4). Roles:
+   * - ink (cobalt): the one action/link colour. On night surfaces actions invert to white.
+   * - ink-900 (night): brand surfaces — header, hero, footer.
+   * - highlight (signal yellow): attention — you-are-here, differences, selection,
+   *   focus on dark. Always paired with text.
+   * - line-*: stream lines. Lines, dots and markers only, never text.
+   * - paper-*: Margin Notes paper surfaces, one role each (text on them is body/muted/ink).
+   */
+  --color-ink: #2147e8;
+  --color-ink-700: #1834b8;
+  --color-ink-100: #d4dcfa;
+  --color-ink-50: #e9edff;
+  --color-ink-900: #0b1638;
+  --color-on-ink-muted: #b9c6f5;
+  --color-highlight: #ffd23f;
+
+  --color-line-saffron: #e8730c;
+  --color-line-teal: #0e8c8c;
+  --color-line-rose: #d6336c;
+  --color-line-violet: #6e4fe0;
+  --color-line-green: #2b8a4b;
+
+  /* Paper roles: periwinkle = discovery, mint = checking, coral = people and reading. */
+  --color-paper-peri: #dce2ff;
+  --color-paper-mint: #cdefdf;
+  --color-paper-coral: #ffd9d2;
+
+  --color-paper: #f5f6fa;
+  --color-surface: #ffffff;
+  --color-body: #0e1530;
+  --color-muted: #4a5272;
+  --color-rule: #dde1ea;
+  --color-rule-strong: #7d8699;
+
+  --color-success: #1c7a4a;
+  --color-success-tint: #e6f4ec;
+  --color-warning: #8a5300;
+  --color-warning-tint: #fff3d6;
+  --color-error: #b42318;
+  --color-error-tint: #fdecea;
+
+  --font-sans: 'Anek Latin Variable', 'Noto Sans', 'Segoe UI', system-ui, sans-serif;
+  /* Brief decorative annotations only (DESIGN-DIRECTION.md §5). */
+  --font-hand: 'Kalam', 'Segoe Print', cursive;
+
+  /* Radius tiers: controls, floating layers, monogram tiles. Rows and tables use none. */
+  --radius-control: 6px;
+  --radius-layer: 10px;
+  /* Invite-register cards and panels. */
+  --radius-card: 20px;
+  --radius-tile: 8px;
+
+  /* Elevation: only for things that float above the page. */
+  --shadow-raised: 0 1px 2px rgb(23 32 54 / 0.06), 0 4px 12px rgb(23 32 54 / 0.08);
+  --shadow-overlay: 0 12px 40px rgb(23 32 54 / 0.2);
+
+  /* 1240px content + 2 × 32px gutters */
+  --container-page: 81.5rem;
+  /* Reading measure, 680px */
+  --container-measure: 42.5rem;
+
+  --ease-out: cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+@layer base {
+  html {
+    background-color: var(--color-paper);
+    color: var(--color-body);
+    font-family: var(--font-sans);
+    -webkit-text-size-adjust: 100%;
+    text-rendering: optimizeLegibility;
+    /* Keep focused elements clear of sticky layers (WCAG 2.4.11). The section nav, compare
+       tray and detail action bar publish their heights as custom properties. */
+    scroll-padding-top: calc(5rem + var(--section-nav-height, 0px));
+    scroll-padding-bottom: calc(
+      var(--compare-tray-height, 0px) + var(--action-bar-height, 0px) + 1rem
+    );
+  }
+
+  body {
+    font-size: 1rem;
+    line-height: 1.6;
+    min-height: 100dvh;
+    /* Room below the footer for a detail page's fixed action bar (0 when there is none). */
+    padding-bottom: var(--action-bar-height, 0px);
+  }
+
+  @media (min-width: 1024px) {
+    body {
+      font-size: 1.0625rem;
+    }
+  }
+
+  :focus-visible {
+    outline: 2px solid var(--color-ink);
+    outline-offset: 2px;
+  }
+
+  /* On ink surfaces the focus ring switches to the highlighter. */
+  .on-ink :focus-visible {
+    outline-color: var(--color-highlight);
+  }
+
+  a {
+    text-underline-offset: 0.18em;
+    text-decoration-thickness: 1px;
+  }
+
+  mark {
+    background-color: var(--color-highlight);
+    color: inherit;
+    padding-inline: 0.1em;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+      scroll-behavior: auto !important;
+    }
+  }
+}
+
+/*
+ * Type scale — DESIGN-DIRECTION.md §5. Display and section headings use Anek's wide
+ * setting (112.5%): signage-like, the Routes voice. Body text stays at normal width.
+ */
+@layer components {
+  .type-h1 {
+    font-size: 2rem;
+    line-height: 1.08;
+    font-weight: 720;
+    font-stretch: 112.5%;
+    letter-spacing: -0.02em;
+    text-wrap: balance;
+  }
+  /* Homepage hero H1 only. Colour comes from its surface (white on night). */
+  .type-display {
+    font-size: 2.5rem;
+    line-height: 1;
+    font-weight: 760;
+    font-stretch: 112.5%;
+    letter-spacing: -0.025em;
+    text-wrap: balance;
+  }
+  /* Invite-register (homepage) section headings. */
+  .type-section {
+    font-size: 2rem;
+    line-height: 1.05;
+    font-weight: 720;
+    font-stretch: 112.5%;
+    letter-spacing: -0.02em;
+    text-wrap: balance;
+  }
+  .type-lead {
+    font-size: 1.125rem;
+    line-height: 1.5;
+  }
+  .type-h2 {
+    font-size: 1.5rem;
+    line-height: 1.15;
+    font-weight: 700;
+    font-stretch: 112.5%;
+    letter-spacing: -0.015em;
+    text-wrap: balance;
+  }
+  .type-h3 {
+    font-size: 1.125rem;
+    line-height: 1.3;
+    font-weight: 600;
+  }
+  .type-small {
+    font-size: 0.875rem;
+    line-height: 1.5;
+  }
+  .type-meta {
+    font-size: 0.875rem;
+    line-height: 1.4;
+    font-weight: 500;
+    color: var(--color-muted);
+  }
+  .type-fact {
+    font-size: 1.0625rem;
+    line-height: 1.3;
+    font-weight: 600;
+    font-variant-numeric: tabular-nums;
+  }
+  .type-caption {
+    font-size: 0.8125rem;
+    line-height: 1.4;
+    color: var(--color-muted);
+  }
+
+  @media (min-width: 768px) {
+    .type-display {
+      font-size: 3.5rem;
+    }
+    .type-section {
+      font-size: 2.625rem;
+    }
+  }
+
+  @media (min-width: 1024px) {
+    .type-display {
+      font-size: 4.75rem;
+    }
+    .type-section {
+      font-size: 3.25rem;
+    }
+    .type-lead {
+      font-size: 1.25rem;
+    }
+    .type-h1 {
+      font-size: 2.75rem;
+    }
+    .type-h2 {
+      font-size: 1.875rem;
+    }
+    .type-h3 {
+      font-size: 1.25rem;
+    }
+    .type-fact {
+      font-size: 1.125rem;
+    }
+  }
+
+  /*
+   * Margin Notes treatments (DESIGN-DIRECTION.md §7.1). Reserved for selected elements:
+   * the hero annotation, homepage course teasers, the comparison sheet and the featured
+   * article cover. Everything else uses plain surfaces.
+   */
+  .paper-note {
+    border: 1.5px solid var(--color-body);
+    /* Uneven radii read as a lightly hand-drawn outline. */
+    border-radius: 18px 14px 20px 13px / 14px 20px 13px 18px;
+    box-shadow: 4px 4px 0 var(--color-body);
+  }
+  .tape {
+    position: absolute;
+    height: 1.375rem;
+    width: 5rem;
+    background: rgb(220 226 255 / 0.85);
+    box-shadow: 0 1px 0 rgb(14 21 48 / 0.06);
+  }
+  /* Blue-pen handwriting: decorative annotations only, never facts or controls. */
+  .hand {
+    font-family: var(--font-hand);
+    font-weight: 400;
+    color: var(--color-ink);
+  }
+
+  /*
+   * Highlighter mark that sweeps in when [data-on] is set. A solid-colour fill
+   * (single-colour background-image so it can animate and wrap across lines).
+   * Never the only signal: callers pair it with text (e.g. "Differs").
+   */
+  .highlighter {
+    background-image: linear-gradient(var(--color-highlight), var(--color-highlight));
+    background-repeat: no-repeat;
+    background-size: 0% 100%;
+    -webkit-box-decoration-break: clone;
+    box-decoration-break: clone;
+    padding-inline: 0.15em;
+    margin-inline: -0.15em;
+    transition: background-size 220ms var(--ease-out);
+  }
+  .highlighter[data-on] {
+    background-size: 100% 100%;
+  }
+}
+
+/* Motion for sheets and overlays (Radix uses data-state for enter/exit). */
+@theme {
+  --animate-sheet-in-right: sheet-in-right 220ms var(--ease-out);
+  --animate-sheet-out-right: sheet-out-right 150ms ease-in;
+  --animate-sheet-in-bottom: sheet-in-bottom 240ms var(--ease-out);
+  --animate-sheet-out-bottom: sheet-out-bottom 160ms ease-in;
+  --animate-fade-in: fade-in 180ms var(--ease-out);
+  --animate-fade-out: fade-out 120ms ease-in;
+
+  @keyframes sheet-in-right {
+    from {
+      transform: translateX(100%);
+    }
+  }
+  @keyframes sheet-out-right {
+    to {
+      transform: translateX(100%);
+    }
+  }
+  @keyframes sheet-in-bottom {
+    from {
+      transform: translateY(100%);
+    }
+  }
+  @keyframes sheet-out-bottom {
+    to {
+      transform: translateY(100%);
+    }
+  }
+  @keyframes fade-in {
+    from {
+      opacity: 0;
+    }
+  }
+  @keyframes fade-out {
+    to {
+      opacity: 0;
+    }
+  }
+}
